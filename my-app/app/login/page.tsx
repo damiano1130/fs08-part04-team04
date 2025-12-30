@@ -35,10 +35,10 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <div className="flex flex-col items-center">
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex flex-col items-start gap-14">
+          <div className="flex flex-col items-center gap-6 w-full">
+            <div className="flex flex-col items-start gap-14 w-full">
               {/* Input Fields */}
-              <div className="flex flex-col items-start gap-8">
+              <div className="flex flex-col items-start gap-8 w-full">
                 {/* Email Field */}
                 <div className="flex flex-col items-start gap-4 w-full">
                   <label className="text-[20px] font-normal leading-[32px] text-[#1f1f1f]">
@@ -101,13 +101,13 @@ export default function LoginPage() {
             {/* Footer Link */}
             <div className="flex items-center justify-center gap-2 text-[20px] leading-[32px] w-full max-w-[419px]">
               <span className="text-[#999999] font-normal">
-                기업 담당자이신가요?
+                아직 계정이 없으신가요?
               </span>
               <Link
                 href="/signup"
                 className="text-[#f97b22] font-semibold underline decoration-solid underline-offset-2 hover:text-[#e06a1a] transition"
               >
-                가입하기
+                회원가입
               </Link>
             </div>
           </div>

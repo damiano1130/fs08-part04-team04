@@ -18,7 +18,7 @@ const mockProducts: Product[] = [
     name: "코카콜라 제로",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/94a37210-5b6d-4be0-b037-68fa32b70346",
+    image: "/product-coke-zero.png",
     purchaseCount: 29,
   },
   {
@@ -26,7 +26,7 @@ const mockProducts: Product[] = [
     name: "코카콜라",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/6a0baa2d-e2b6-4d47-abf0-1b33f28151b2",
+    image: "/product-coke.png",
     purchaseCount: 29,
   },
   {
@@ -34,7 +34,7 @@ const mockProducts: Product[] = [
     name: "환타 오렌지",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/abfc302e-bb61-4498-95a3-4eb0b719dd88",
+    image: "/product-fanta.png",
     purchaseCount: 29,
   },
   {
@@ -42,7 +42,7 @@ const mockProducts: Product[] = [
     name: "스프라이트",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/5df9f515-33cb-4c8a-8636-4a5a162754f7",
+    image: "/product-sprite.png",
     purchaseCount: 29,
   },
   {
@@ -50,7 +50,7 @@ const mockProducts: Product[] = [
     name: "코카콜라 제로",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/94a37210-5b6d-4be0-b037-68fa32b70346",
+    image: "/product-coke-zero.png",
     purchaseCount: 29,
   },
   {
@@ -58,7 +58,7 @@ const mockProducts: Product[] = [
     name: "코카콜라",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/6a0baa2d-e2b6-4d47-abf0-1b33f28151b2",
+    image: "/product-coke.png",
     purchaseCount: 29,
   },
   {
@@ -66,7 +66,7 @@ const mockProducts: Product[] = [
     name: "환타 오렌지",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/abfc302e-bb61-4498-95a3-4eb0b719dd88",
+    image: "/product-fanta.png",
     purchaseCount: 29,
   },
   {
@@ -74,7 +74,7 @@ const mockProducts: Product[] = [
     name: "스프라이트",
     category: "청량・탄산음료",
     price: 2000,
-    image: "https://www.figma.com/api/mcp/asset/5df9f515-33cb-4c8a-8636-4a5a162754f7",
+    image: "/product-sprite.png",
     purchaseCount: 29,
   },
 ];
@@ -86,6 +86,7 @@ export default function ProductsPage() {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [mainCategory, setMainCategory] = useState("음료");
   const [subCategory, setSubCategory] = useState("청량・탄산음료");
+  const [showProductModal, setShowProductModal] = useState(false);
 
   const mainCategories = [
     "스낵",
@@ -113,7 +114,10 @@ export default function ProductsPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#fbf8f4] border-b border-[#e6e6e6] h-[88px] flex items-center justify-between px-6 md:px-[120px] py-[26px]">
         <div className="flex items-center gap-16">
-          <Link href="/" className="flex items-center justify-center h-8 w-[126px]">
+          <Link
+            href="/"
+            className="flex items-center justify-center h-8 w-[126px]"
+          >
             <img
               src="/snack-logo.png"
               alt="Snack"
@@ -131,9 +135,12 @@ export default function ProductsPage() {
           </nav>
         </div>
         <div className="flex items-center gap-12">
-          <button className="h-[88px] flex items-center justify-center px-4 text-[20px] font-bold text-[#c4c4c4] leading-[32px]">
+          <Link
+            href="/profile"
+            className="h-[88px] flex items-center justify-center px-4 text-[20px] font-bold text-[#c4c4c4] leading-[32px] hover:text-[#f97b22] transition"
+          >
             Profile
-          </button>
+          </Link>
           <button className="h-[88px] flex items-center justify-center px-4 text-[20px] font-bold text-[#c4c4c4] leading-[32px]">
             Logout
           </button>
@@ -227,9 +234,7 @@ export default function ProductsPage() {
                       index === sortOptions.length - 1
                         ? "rounded-bl-[8px] rounded-br-[8px]"
                         : ""
-                    } ${
-                      sortOption === option ? "bg-gray-50" : ""
-                    }`}
+                    } ${sortOption === option ? "bg-gray-50" : ""}`}
                   >
                     {option}
                   </button>
@@ -272,7 +277,10 @@ export default function ProductsPage() {
       </div>
 
       {/* FAB - Register Product Button */}
-      <button className="fixed bottom-8 right-6 md:right-[calc(12.5%-43px)] bg-[#64d396] rounded-full px-4 py-4 shadow-[4px_0px_10px_0px_rgba(204,204,204,0.12),0px_4px_8px_0px_rgba(0,0,0,0.08)] flex items-center gap-2 hover:bg-[#5bc088] transition z-30">
+      <button
+        onClick={() => setShowProductModal(true)}
+        className="fixed bottom-8 right-6 md:right-[calc(12.5%-43px)] bg-[#64d396] rounded-full px-4 py-4 shadow-[4px_0px_10px_0px_rgba(204,204,204,0.12),0px_4px_8px_0px_rgba(0,0,0,0.08)] flex items-center gap-2 hover:bg-[#5bc088] transition z-30"
+      >
         <svg
           width="36"
           height="36"
@@ -291,6 +299,19 @@ export default function ProductsPage() {
           상품 등록
         </span>
       </button>
+
+      {/* Product Registration Modal */}
+      {showProductModal && (
+        <ProductRegistrationModal
+          onClose={() => setShowProductModal(false)}
+          mainCategories={mainCategories}
+          subCategories={subCategories}
+          mainCategory={mainCategory}
+          subCategory={subCategory}
+          onMainCategoryChange={setMainCategory}
+          onSubCategoryChange={setSubCategory}
+        />
+      )}
     </div>
   );
 }
@@ -363,3 +384,289 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
+type ProductRegistrationModalProps = {
+  onClose: () => void;
+  mainCategories: string[];
+  subCategories: Record<string, string[]>;
+  mainCategory: string;
+  subCategory: string;
+  onMainCategoryChange: (category: string) => void;
+  onSubCategoryChange: (category: string) => void;
+};
+
+function ProductRegistrationModal({
+  onClose,
+  mainCategories,
+  subCategories,
+  mainCategory,
+  subCategory,
+  onMainCategoryChange,
+  onSubCategoryChange,
+}: ProductRegistrationModalProps) {
+  const [productName, setProductName] = useState("");
+  const [price, setPrice] = useState("");
+  const [productLink, setProductLink] = useState("");
+  const [showMainCategoryDropdown, setShowMainCategoryDropdown] =
+    useState(false);
+  const [showSubCategoryDropdown, setShowSubCategoryDropdown] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = () => {
+    // TODO: 상품 등록 로직 구현
+    console.log({
+      productName,
+      mainCategory,
+      subCategory,
+      price,
+      productLink,
+      image: imagePreview,
+    });
+    onClose();
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
+
+      {/* Modal */}
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-[#fbf8f4] rounded-[32px] shadow-[4px_4px_10px_0px_rgba(169,169,169,0.2)] p-6 md:p-8 w-[90%] max-w-[680px] max-h-[90vh] overflow-y-auto">
+        {/* Title */}
+        <div className="mb-4">
+          <h2 className="text-[24px] font-bold text-[#1f1f1f] leading-[32px]">
+            상품 등록
+          </h2>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-[#e6e6e6] mb-8" />
+
+        {/* Form */}
+        <div className="flex flex-col gap-8">
+          {/* Product Name */}
+          <div className="flex flex-col gap-4">
+            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
+              상품명
+            </label>
+            <input
+              type="text"
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              placeholder="상품명을 입력해주세요."
+              className="h-16 w-full px-[14px] rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
+            />
+          </div>
+
+          {/* Category */}
+          <div className="flex flex-col gap-4">
+            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
+              카테고리
+            </label>
+            <div className="flex gap-2">
+              {/* Main Category Dropdown */}
+              <div className="flex-1 relative">
+                <button
+                  onClick={() => {
+                    setShowMainCategoryDropdown(!showMainCategoryDropdown);
+                    setShowSubCategoryDropdown(false);
+                  }}
+                  className="w-full h-16 px-[14px] rounded-[16px] border border-[#fcc49c] bg-white flex items-center justify-between text-[20px] leading-[32px] text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
+                >
+                  <span className={mainCategory ? "text-[#1f1f1f]" : ""}>
+                    {mainCategory || "대분류"}
+                  </span>
+                  <svg
+                    width="36"
+                    height="36"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className={`transition-transform ${
+                      showMainCategoryDropdown ? "rotate-180" : ""
+                    }`}
+                  >
+                    <path
+                      d="M6 9L12 15L18 9"
+                      stroke="#f97b22"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                {showMainCategoryDropdown && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowMainCategoryDropdown(false)}
+                    />
+                    <div className="absolute top-full mt-1 left-0 right-0 z-20 bg-white border border-[#fcc49c] rounded-[16px] shadow-lg overflow-hidden">
+                      {mainCategories.map((category) => (
+                        <button
+                          key={category}
+                          onClick={() => {
+                            onMainCategoryChange(category);
+                            setShowMainCategoryDropdown(false);
+                          }}
+                          className="w-full px-[14px] py-3 text-[20px] leading-[32px] text-[#1f1f1f] text-left hover:bg-gray-50 transition"
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Sub Category Dropdown */}
+              <div className="flex-1 relative">
+                <button
+                  onClick={() => {
+                    if (subCategories[mainCategory]) {
+                      setShowSubCategoryDropdown(!showSubCategoryDropdown);
+                      setShowMainCategoryDropdown(false);
+                    }
+                  }}
+                  disabled={!subCategories[mainCategory]}
+                  className="w-full h-16 px-[14px] rounded-[16px] border border-[#fcc49c] bg-white flex items-center justify-between text-[20px] leading-[32px] text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className={subCategory ? "text-[#1f1f1f]" : ""}>
+                    {subCategory || "소분류"}
+                  </span>
+                  <svg
+                    width="36"
+                    height="36"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className={`transition-transform ${
+                      showSubCategoryDropdown ? "rotate-180" : ""
+                    }`}
+                  >
+                    <path
+                      d="M6 9L12 15L18 9"
+                      stroke="#f97b22"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                {showSubCategoryDropdown && subCategories[mainCategory] && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowSubCategoryDropdown(false)}
+                    />
+                    <div className="absolute top-full mt-1 left-0 right-0 z-20 bg-white border border-[#fcc49c] rounded-[16px] shadow-lg overflow-hidden">
+                      {subCategories[mainCategory].map((category) => (
+                        <button
+                          key={category}
+                          onClick={() => {
+                            onSubCategoryChange(category);
+                            setShowSubCategoryDropdown(false);
+                          }}
+                          className="w-full px-[14px] py-3 text-[20px] leading-[32px] text-[#1f1f1f] text-left hover:bg-gray-50 transition"
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="flex flex-col gap-4">
+            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
+              가격
+            </label>
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="가격을 입력해주세요."
+              className="h-16 w-full px-[14px] rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
+            />
+          </div>
+
+          {/* Product Image */}
+          <div className="flex flex-col gap-4">
+            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
+              상품 이미지
+            </label>
+            <label className="w-[160px] h-[160px] border border-[#fcc49c] bg-white rounded-[6px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition">
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="상품 이미지 미리보기"
+                  className="w-full h-full object-cover rounded-[6px]"
+                />
+              ) : (
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="text-[#e0e0e0]"
+                >
+                  <path
+                    d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* Product Link */}
+          <div className="flex flex-col gap-4">
+            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
+              제품링크
+            </label>
+            <input
+              type="url"
+              value={productLink}
+              onChange={(e) => setProductLink(e.target.value)}
+              placeholder="링크를 입력해주세요."
+              className="h-16 w-full px-[14px] rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
+            />
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex items-center justify-between gap-4 mt-8">
+          <button
+            onClick={onClose}
+            className="flex-1 h-16 bg-[#fdf0df] rounded-[16px] text-[20px] font-semibold text-[#f97b22] leading-[32px] hover:bg-[#fde1cd] transition"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="flex-1 h-16 bg-[#f97b22] rounded-[16px] text-[20px] font-semibold text-white leading-[32px] hover:bg-[#e06a1a] transition"
+          >
+            등록하기
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
