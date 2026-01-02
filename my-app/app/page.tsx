@@ -33,13 +33,13 @@ function SpeechBubble({ text, arrowImage }: SpeechBubbleProps) {
         <div className="rotate-180">
           <div className="h-[26px] relative w-[32px]">
             <div className="absolute inset-[6.98%_0_0_0]">
-        <img
+              <img
                 src={arrowImage}
                 alt=""
                 className="block max-w-none w-full h-full"
-          loading="lazy"
-            />
-          </div>
+                loading="lazy"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -61,10 +61,7 @@ export default function LandingPage() {
           />
         </div>
         <nav className="flex items-center gap-8 text-[18px] leading-[32px]">
-          <Link
-            href="/login"
-            className="font-bold hover:opacity-80 transition"
-          >
+          <Link href="/login" className="font-bold hover:opacity-80 transition">
             로그인
           </Link>
           <Link
@@ -118,6 +115,6 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
-      </div>
+    </div>
   );
 }

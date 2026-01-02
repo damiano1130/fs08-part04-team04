@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import ProductDeleteModal from "./modals/ProductDeleteModal";
 
 type Product = {
   id: number;
@@ -318,69 +319,103 @@ export default function ProductsPage() {
 
 function ProductCard({ product }: { product: Product }) {
   const [isLiked, setIsLiked] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Product Image Card */}
-      <div className="bg-white rounded-[20px] h-[402px] relative shadow-[4px_4px_20px_0px_rgba(250,247,243,0.25)] flex items-center justify-center p-[73px]">
-        {/* Like Button */}
-        <button
-          onClick={() => setIsLiked(!isLiked)}
-          className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center z-10"
-        >
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 48 48"
-            fill="none"
-            className={isLiked ? "text-red-500" : "text-gray-300"}
+    <>
+      <div className="flex flex-col gap-6">
+        {/* Product Image Card */}
+        <div className="bg-white rounded-[20px] h-[402px] relative shadow-[4px_4px_20px_0px_rgba(250,247,243,0.25)] flex items-center justify-center p-[73px]">
+          {/* Like Button */}
+          <button
+            onClick={() => setIsLiked(!isLiked)}
+            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center z-10"
           >
-            <path
-              d="M24 36.7L21.1 34.1C10.8 25.4 4 19.7 4 12.5C4 6.9 8.5 2.5 14.1 2.5C17.3 2.5 20.4 4.1 24 6.9C27.6 4.1 30.7 2.5 33.9 2.5C39.5 2.5 44 6.9 44 12.5C44 19.7 37.2 25.4 26.9 34.1L24 36.7Z"
-              fill={isLiked ? "currentColor" : "none"}
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 48 48"
+              fill="none"
+              className={isLiked ? "text-red-500" : "text-gray-300"}
+            >
+              <path
+                d="M24 36.7L21.1 34.1C10.8 25.4 4 19.7 4 12.5C4 6.9 8.5 2.5 14.1 2.5C17.3 2.5 20.4 4.1 24 6.9C27.6 4.1 30.7 2.5 33.9 2.5C39.5 2.5 44 6.9 44 12.5C44 19.7 37.2 25.4 26.9 34.1L24 36.7Z"
+                fill={isLiked ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          {/* Delete Button (Kebab Menu) */}
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="absolute top-4 left-4 w-12 h-12 flex items-center justify-center z-10"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="text-[#ababab]"
+            >
+              <circle cx="12" cy="6" r="1.5" fill="currentColor" />
+              <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+              <circle cx="12" cy="18" r="1.5" fill="currentColor" />
+            </svg>
+          </button>
+
+          {/* Product Image */}
+          <div className="w-[140px] h-[243px] relative">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-contain"
+              loading="lazy"
             />
-          </svg>
-        </button>
-
-        {/* Product Image */}
-        <div className="w-[140px] h-[243px] relative">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-contain"
-            loading="lazy"
-          />
-        </div>
-      </div>
-
-      {/* Product Info */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[16px] leading-[26px] text-[#999]">
-              {product.category}
-            </span>
-            <div className="bg-[#fee8b0] px-2 py-1 rounded">
-              <span className="text-[16px] font-semibold text-[#f97b22] leading-[26px]">
-                {product.purchaseCount}회 구매
-              </span>
-            </div>
           </div>
-          <h3 className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
-            {product.name}
-          </h3>
         </div>
-        <div>
-          <p className="text-[32px] font-bold text-[#1f1f1f] leading-[42px]">
-            {product.price.toLocaleString()}원
-          </p>
+
+        {/* Product Info */}
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[16px] leading-[26px] text-[#999]">
+                {product.category}
+              </span>
+              <div className="bg-[#fee8b0] px-2 py-1 rounded">
+                <span className="text-[16px] font-semibold text-[#f97b22] leading-[26px]">
+                  {product.purchaseCount}회 구매
+                </span>
+              </div>
+            </div>
+            <h3 className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
+              {product.name}
+            </h3>
+          </div>
+          <div>
+            <p className="text-[32px] font-bold text-[#1f1f1f] leading-[42px]">
+              {product.price.toLocaleString()}원
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <ProductDeleteModal
+          productName={product.name}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() => {
+            // TODO: 상품 삭제 로직 구현
+            console.log("상품 삭제:", product.id);
+            setShowDeleteModal(false);
+          }}
+        />
+      )}
+    </>
   );
 }
 
