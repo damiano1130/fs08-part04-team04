@@ -1,28 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Header from "../components/Header";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import ErrorMessage from "../components/ErrorMessage";
+import StyledLink from "../components/StyledLink";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const isFormValid = email.trim() !== "" && password.trim() !== "";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid || isLoading) return;
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // 로그인 성공 - 홈 또는 상품 페이지로 리다이렉트
+        router.push("/products");
+      } else {
+        setError(data.message || "로그인에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("서버 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#fbf8f4] relative">
       {/* Header */}
-      <header className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1920px] h-[88px] bg-[#f97b22] flex items-center justify-center px-6 md:px-[120px] py-[26px]">
-        <div className="flex items-center justify-center h-8 w-[126px]">
-          <img
-            src="/snack-logo.png"
-            alt="Snack"
-            className="h-8 w-auto"
-            loading="lazy"
-          />
-        </div>
-      </header>
+      <Header variant="auth" />
 
       {/* Main Content */}
       <main className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 mt-[35px] flex flex-col items-center gap-12 md:gap-16 px-4 w-full max-w-[640px]">
@@ -34,81 +64,56 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center w-full">
           <div className="flex flex-col items-center gap-6 w-full">
-            <div className="flex flex-col items-start gap-14 w-full">
-              {/* Input Fields */}
-              <div className="flex flex-col items-start gap-8 w-full">
-                {/* Email Field */}
-                <div className="flex flex-col items-start gap-4 w-full">
-                  <label className="text-[20px] font-normal leading-[32px] text-[#1f1f1f]">
-                    이메일
-                  </label>
-                  <div className="relative w-full">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="이메일을 입력해주세요."
-                      className="w-full h-16 px-[14px] rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
-                    />
-                  </div>
-                </div>
+            {/* Error Message */}
+            {error && <ErrorMessage message={error} className="w-full" />}
 
-                {/* Password Field */}
-                <div className="flex flex-col items-start gap-4 w-full">
-                  <label className="text-[20px] font-normal leading-[32px] text-[#1f1f1f]">
-                    비밀번호
-                  </label>
-                  <div className="relative w-full">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="비밀번호를 입력해주세요."
-                      className="w-full h-16 px-[14px] pr-12 rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-auto"
-                    >
-                      <img
-                        src="/icon-visibility.png"
-                        alt={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
-                        className="h-6 w-6 opacity-60"
-                        loading="lazy"
-                      />
-                    </button>
-                  </div>
-                </div>
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col items-center gap-14 w-full max-w-[640px]"
+            >
+              {/* Input Fields */}
+              <div className="flex flex-col items-center gap-8 w-full">
+                <Input
+                  label="이메일"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="이메일을 입력해주세요."
+                  containerClassName="w-full"
+                />
+                <Input
+                  label="비밀번호"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="비밀번호를 입력해주세요."
+                  showPasswordToggle
+                  containerClassName="w-full"
+                />
               </div>
 
               {/* Login Button */}
-              <button
-                type="button"
-                disabled={!isFormValid}
-                className={`w-full h-16 rounded-[16px] text-[20px] font-semibold text-center text-white transition ${
-                  isFormValid
-                    ? "bg-[#f97b22] hover:bg-[#e06a1a] cursor-pointer"
-                    : "bg-[#e0e0e0] cursor-not-allowed"
-                }`}
+              <Button
+                type="submit"
+                variant={isFormValid && !isLoading ? "primary" : "disabled"}
+                fullWidth
+                isLoading={isLoading}
+                disabled={!isFormValid || isLoading}
               >
                 로그인
-              </button>
-            </div>
+              </Button>
+            </form>
 
             {/* Footer Link */}
             <div className="flex items-center justify-center gap-2 text-[20px] leading-[32px] w-full max-w-[419px]">
               <span className="text-[#999999] font-normal">
                 아직 계정이 없으신가요?
               </span>
-              <Link
-                href="/signup"
-                className="text-[#f97b22] font-semibold underline decoration-solid underline-offset-2 hover:text-[#e06a1a] transition"
-              >
+              <StyledLink href="/signup" variant="underline">
                 회원가입
-              </Link>
+              </StyledLink>
             </div>
           </div>
         </div>

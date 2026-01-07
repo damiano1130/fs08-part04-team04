@@ -1,8 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import ProductDeleteModal from "./modals/ProductDeleteModal";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import Dropdown from "../components/Dropdown";
+import Tab from "../components/Tab";
+import FAB from "../components/FAB";
+import LikeButton from "../components/LikeButton";
+import KebabMenuButton from "../components/KebabMenuButton";
+import Input from "../components/Input";
+import ImageUpload from "../components/ImageUpload";
+import Modal from "../components/Modal";
+import HeaderNavLink from "../components/HeaderNavLink";
 
 type Product = {
   id: number;
@@ -83,11 +94,59 @@ const mockProducts: Product[] = [
 type SortOption = "최신순" | "판매순" | "낮은가격순" | "높은가격순";
 
 export default function ProductsPage() {
+  const router = useRouter();
   const [sortOption, setSortOption] = useState<SortOption>("최신순");
-  const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [mainCategory, setMainCategory] = useState("음료");
   const [subCategory, setSubCategory] = useState("청량・탄산음료");
   const [showProductModal, setShowProductModal] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  // 인증 상태 확인
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me");
+        const data = await response.json();
+        if (data.success) {
+          setIsAuthenticated(true);
+        } else {
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        router.push("/login");
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  // 인증 확인 중이면 로딩 표시
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-[#fbf8f4] flex items-center justify-center">
+        <div className="text-[20px] text-[#1f1f1f]">로딩 중...</div>
+      </div>
+    );
+  }
+
+  // 인증되지 않았으면 아무것도 렌더링하지 않음 (리다이렉트 중)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const mainCategories = [
     "스낵",
@@ -113,136 +172,49 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-[#fbf8f4] relative">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#fbf8f4] border-b border-[#e6e6e6] h-[88px] flex items-center justify-between px-6 md:px-[120px] py-[26px]">
-        <div className="flex items-center gap-16">
-          <Link
-            href="/"
-            className="flex items-center justify-center h-8 w-[126px]"
-          >
-            <img
-              src="/snack-logo.png"
-              alt="Snack"
-              className="h-8 w-auto"
-              loading="lazy"
-            />
-          </Link>
-          <nav className="hidden md:flex gap-10">
-            <Link
-              href="/products"
-              className="h-[88px] flex items-center justify-center px-4 text-[20px] font-bold text-[#f97b22] leading-[32px]"
-            >
-              상품 리스트
-            </Link>
-          </nav>
-        </div>
-        <div className="flex items-center gap-12">
-          <Link
-            href="/profile"
-            className="h-[88px] flex items-center justify-center px-4 text-[20px] font-bold text-[#c4c4c4] leading-[32px] hover:text-[#f97b22] transition"
-          >
-            Profile
-          </Link>
-          <button className="h-[88px] flex items-center justify-center px-4 text-[20px] font-bold text-[#c4c4c4] leading-[32px]">
-            Logout
-          </button>
-        </div>
-      </header>
+      <Header
+        variant="app"
+        rightContent={
+          <div className="flex items-center gap-12">
+            <HeaderNavLink href="/profile">Profile</HeaderNavLink>
+            <HeaderNavLink variant="button" onClick={handleLogout}>
+              Logout
+            </HeaderNavLink>
+          </div>
+        }
+      />
 
       {/* Main Category Tabs */}
-      <div className="sticky top-[88px] z-40 bg-[#fbf8f4] border-b border-[#e6e6e6] h-[64px] flex items-center gap-3 px-6 md:px-[120px] overflow-x-auto">
-        {mainCategories.map((category) => (
-          <button
-            key={category}
-            onClick={() => setMainCategory(category)}
-            className={`h-[64px] flex items-center justify-center px-4 py-[14px] text-[18px] leading-[26px] whitespace-nowrap transition ${
-              mainCategory === category
-                ? "font-bold text-[#f97b22] border-b-2 border-[#f97b22]"
-                : "font-medium text-[#ababab]"
-            }`}
-          >
-            {category}
-          </button>
-        ))}
+      <div className="sticky top-[88px] z-40 bg-[#fbf8f4] border-b border-[#e6e6e6] h-[64px] px-6 md:px-[120px]">
+        <Tab
+          tabs={mainCategories}
+          activeTab={mainCategory}
+          onTabChange={setMainCategory}
+          variant="underline"
+        />
       </div>
 
       {/* Sub Category Tabs */}
       {subCategories[mainCategory] && (
-        <div className="sticky top-[152px] z-40 bg-[#fbf8f4] border-b border-[#e6e6e6] h-[64px] flex items-center gap-3 px-6 md:px-[120px] overflow-x-auto">
-          {subCategories[mainCategory].map((category) => (
-            <button
-              key={category}
-              onClick={() => setSubCategory(category)}
-              className={`h-[64px] flex items-center justify-center px-4 py-[14px] text-[16px] leading-[26px] whitespace-nowrap transition ${
-                subCategory === category
-                  ? "font-semibold text-[#f97b22]"
-                  : "font-medium text-[#ababab]"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="sticky top-[152px] z-40 bg-[#fbf8f4] border-b border-[#e6e6e6] h-[64px] px-6 md:px-[120px]">
+          <Tab
+            tabs={subCategories[mainCategory]}
+            activeTab={subCategory}
+            onTabChange={setSubCategory}
+          />
         </div>
       )}
 
       {/* Content Area */}
       <div className="px-6 md:px-[120px] py-6 md:py-14">
         {/* Sort Dropdown */}
-        <div className="flex justify-end mb-6 relative">
-          <button
-            onClick={() => setShowSortDropdown(!showSortDropdown)}
-            className="bg-white border border-[#e0e0e0] rounded-[8px] px-[14px] py-3 flex items-center justify-between gap-2 w-[136px]"
-          >
-            <span className="text-[18px] leading-[26px] text-[#999]">
-              {sortOption}
-            </span>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              className={`transition-transform ${
-                showSortDropdown ? "rotate-180" : ""
-              }`}
-            >
-              <path
-                d="M6 9L12 15L18 9"
-                stroke="#ababab"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          {/* Dropdown Menu */}
-          {showSortDropdown && (
-            <>
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setShowSortDropdown(false)}
-              />
-              <div className="absolute top-full mt-1 right-0 z-20 bg-white border border-[#e0e0e0] rounded-[8px] shadow-[4px_4px_8px_0px_rgba(236,236,236,0.25)] overflow-hidden w-[136px]">
-                {sortOptions.map((option, index) => (
-                  <button
-                    key={option}
-                    onClick={() => {
-                      setSortOption(option);
-                      setShowSortDropdown(false);
-                    }}
-                    className={`w-full px-[14px] py-3 text-[18px] leading-[26px] text-[#999] text-center hover:bg-gray-50 transition ${
-                      index === 0 ? "rounded-tl-[8px] rounded-tr-[8px]" : ""
-                    } ${
-                      index === sortOptions.length - 1
-                        ? "rounded-bl-[8px] rounded-br-[8px]"
-                        : ""
-                    } ${sortOption === option ? "bg-gray-50" : ""}`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+        <div className="flex justify-end mb-6">
+          <Dropdown
+            options={sortOptions.map((opt) => ({ value: opt, label: opt }))}
+            value={sortOption}
+            onChange={(value) => setSortOption(value as SortOption)}
+            className="w-[136px]"
+          />
         </div>
 
         {/* Product Grid */}
@@ -254,10 +226,8 @@ export default function ProductsPage() {
 
         {/* Load More Button */}
         <div className="flex justify-center mb-24">
-          <button className="bg-white border border-[#f97b22] rounded-[16px] px-6 py-4 shadow-[4px_4px_10px_0px_rgba(195,217,242,0.2)] flex items-center gap-2 hover:bg-[#fef3eb] transition">
-            <span className="text-[20px] font-semibold text-[#f97b22] leading-[32px]">
-              더보기
-            </span>
+          <Button variant="outline" className="px-6 py-4 shadow-[4px_4px_10px_0px_rgba(195,217,242,0.2)] flex items-center gap-2">
+            <span>더보기</span>
             <svg
               width="24"
               height="24"
@@ -273,33 +243,15 @@ export default function ProductsPage() {
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* FAB - Register Product Button */}
-      <button
+      <FAB
         onClick={() => setShowProductModal(true)}
-        className="fixed bottom-8 right-6 md:right-[calc(12.5%-43px)] bg-[#64d396] rounded-full px-4 py-4 shadow-[4px_0px_10px_0px_rgba(204,204,204,0.12),0px_4px_8px_0px_rgba(0,0,0,0.08)] flex items-center gap-2 hover:bg-[#5bc088] transition z-30"
-      >
-        <svg
-          width="36"
-          height="36"
-          viewBox="0 0 36 36"
-          fill="none"
-          className="text-white"
-        >
-          <path
-            d="M18 9V27M9 18H27"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-        <span className="text-[24px] font-semibold text-white leading-[32px] hidden md:inline">
-          상품 등록
-        </span>
-      </button>
+        label="상품 등록"
+      />
 
       {/* Product Registration Modal */}
       {showProductModal && (
@@ -318,7 +270,6 @@ export default function ProductsPage() {
 }
 
 function ProductCard({ product }: { product: Product }) {
-  const [isLiked, setIsLiked] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
@@ -327,45 +278,13 @@ function ProductCard({ product }: { product: Product }) {
         {/* Product Image Card */}
         <div className="bg-white rounded-[20px] h-[402px] relative shadow-[4px_4px_20px_0px_rgba(250,247,243,0.25)] flex items-center justify-center p-[73px]">
           {/* Like Button */}
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center z-10"
-          >
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 48 48"
-              fill="none"
-              className={isLiked ? "text-red-500" : "text-gray-300"}
-            >
-              <path
-                d="M24 36.7L21.1 34.1C10.8 25.4 4 19.7 4 12.5C4 6.9 8.5 2.5 14.1 2.5C17.3 2.5 20.4 4.1 24 6.9C27.6 4.1 30.7 2.5 33.9 2.5C39.5 2.5 44 6.9 44 12.5C44 19.7 37.2 25.4 26.9 34.1L24 36.7Z"
-                fill={isLiked ? "currentColor" : "none"}
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          <LikeButton className="absolute top-4 right-4" />
 
           {/* Delete Button (Kebab Menu) */}
-          <button
+          <KebabMenuButton
             onClick={() => setShowDeleteModal(true)}
-            className="absolute top-4 left-4 w-12 h-12 flex items-center justify-center z-10"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="text-[#ababab]"
-            >
-              <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-              <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-              <circle cx="12" cy="18" r="1.5" fill="currentColor" />
-            </svg>
-          </button>
+            className="absolute top-4 left-4"
+          />
 
           {/* Product Image */}
           <div className="w-[140px] h-[243px] relative">
@@ -446,17 +365,6 @@ function ProductRegistrationModal({
   const [showSubCategoryDropdown, setShowSubCategoryDropdown] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSubmit = () => {
     // TODO: 상품 등록 로직 구현
     console.log({
@@ -471,12 +379,7 @@ function ProductRegistrationModal({
   };
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
-
-      {/* Modal */}
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-[#fbf8f4] rounded-[32px] shadow-[4px_4px_10px_0px_rgba(169,169,169,0.2)] p-6 md:p-8 w-[90%] max-w-[680px] max-h-[90vh] overflow-y-auto">
+    <Modal isOpen={true} onClose={onClose}>
         {/* Title */}
         <div className="mb-4">
           <h2 className="text-[24px] font-bold text-[#1f1f1f] leading-[32px]">
@@ -490,18 +393,13 @@ function ProductRegistrationModal({
         {/* Form */}
         <div className="flex flex-col gap-8">
           {/* Product Name */}
-          <div className="flex flex-col gap-4">
-            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
-              상품명
-            </label>
-            <input
-              type="text"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              placeholder="상품명을 입력해주세요."
-              className="h-16 w-full px-[14px] rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
-            />
-          </div>
+          <Input
+            label="상품명"
+            type="text"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
+            placeholder="상품명을 입력해주세요."
+          />
 
           {/* Category */}
           <div className="flex flex-col gap-4">
@@ -623,85 +521,48 @@ function ProductRegistrationModal({
           </div>
 
           {/* Price */}
-          <div className="flex flex-col gap-4">
-            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
-              가격
-            </label>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="가격을 입력해주세요."
-              className="h-16 w-full px-[14px] rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
-            />
-          </div>
+          <Input
+            label="가격"
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            placeholder="가격을 입력해주세요."
+          />
 
           {/* Product Image */}
-          <div className="flex flex-col gap-4">
-            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
-              상품 이미지
-            </label>
-            <label className="w-[160px] h-[160px] border border-[#fcc49c] bg-white rounded-[6px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition">
-              {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt="상품 이미지 미리보기"
-                  className="w-full h-full object-cover rounded-[6px]"
-                />
-              ) : (
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="text-[#e0e0e0]"
-                >
-                  <path
-                    d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-            </label>
-          </div>
+          <ImageUpload
+            label="상품 이미지"
+            preview={imagePreview}
+            onImageChange={(file, preview) => setImagePreview(preview)}
+          />
 
           {/* Product Link */}
-          <div className="flex flex-col gap-4">
-            <label className="text-[20px] font-semibold text-[#1f1f1f] leading-[32px]">
-              제품링크
-            </label>
-            <input
-              type="url"
-              value={productLink}
-              onChange={(e) => setProductLink(e.target.value)}
-              placeholder="링크를 입력해주세요."
-              className="h-16 w-full px-[14px] rounded-[16px] border border-[#fcc49c] bg-white text-[20px] leading-[32px] text-[#1f1f1f] placeholder:text-[#ababab] focus:border-[#f97b22] focus:outline-none focus:ring-2 focus:ring-[#f97b22]/30 transition"
-            />
-          </div>
+          <Input
+            label="제품링크"
+            type="url"
+            value={productLink}
+            onChange={(e) => setProductLink(e.target.value)}
+            placeholder="링크를 입력해주세요."
+          />
         </div>
 
         {/* Buttons */}
         <div className="flex items-center justify-between gap-4 mt-8">
-          <button
+          <Button
             onClick={onClose}
-            className="flex-1 h-16 bg-[#fdf0df] rounded-[16px] text-[20px] font-semibold text-[#f97b22] leading-[32px] hover:bg-[#fde1cd] transition"
+            variant="secondary"
+            fullWidth
           >
             취소
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
-            className="flex-1 h-16 bg-[#f97b22] rounded-[16px] text-[20px] font-semibold text-white leading-[32px] hover:bg-[#e06a1a] transition"
+            variant="primary"
+            fullWidth
           >
             등록하기
-          </button>
+          </Button>
         </div>
-      </div>
-    </>
+    </Modal>
   );
 }

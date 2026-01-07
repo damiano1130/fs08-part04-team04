@@ -1,77 +1,65 @@
 "use client";
 
-import Link from "next/link";
-
-// 디자인 시스템 Img 소스 사용
-const LANDING_LOGO_IMAGE =
-  "https://www.figma.com/api/mcp/asset/6a206442-5794-4b42-aeda-21a5a9df293d";
-const LANDING_HERO_IMAGE =
-  "https://www.figma.com/api/mcp/asset/c6a830ad-bcab-42e7-9e91-6baa1cf10778";
-
-// 말풍선 화살표 이미지
-const SPEECH_BUBBLE_ARROW_1 =
-  "https://www.figma.com/api/mcp/asset/38216541-c53a-49f6-9057-3fc99d51059d";
-const SPEECH_BUBBLE_ARROW_2 =
-  "https://www.figma.com/api/mcp/asset/5c26bd4e-ba1e-4e8b-8fac-b897f9af3988";
-const SPEECH_BUBBLE_ARROW_3 =
-  "https://www.figma.com/api/mcp/asset/e9eb58ea-8c24-4269-89f8-c60f2aca4495";
-
-type SpeechBubbleProps = {
-  text: string;
-  arrowImage: string;
-};
-
-function SpeechBubble({ text, arrowImage }: SpeechBubbleProps) {
-  return (
-    <div className="flex flex-col items-center">
-      <div className="bg-[#f97b22] flex items-center justify-center px-[34px] py-[22px] rounded-[100px]">
-        <p className="font-bold text-[#fdf0df] text-[26px] leading-[32px] whitespace-nowrap">
-          {text}
-        </p>
-      </div>
-      <div className="flex items-center justify-center mt-0">
-        <div className="rotate-180">
-          <div className="h-[26px] relative w-[32px]">
-            <div className="absolute inset-[6.98%_0_0_0]">
-              <img
-                src={arrowImage}
-                alt=""
-                className="block max-w-none w-full h-full"
-                loading="lazy"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import LandingHeroIllustration from "./components/LandingHeroIllustration";
+import Header from "./components/Header";
+import SpeechBubble from "./components/SpeechBubble";
+import HeaderNavLink from "./components/HeaderNavLink";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  // 인증 상태 확인
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me");
+        const data = await response.json();
+        if (data.success) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      setIsAuthenticated(false);
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fdf0df] text-[#1f1f1f]">
       {/* Top GNB */}
-      <header className="flex h-[88px] w-full items-center justify-between bg-[#f97b22] px-6 md:px-[120px] text-white">
-        <div className="flex items-center">
-          <img
-            src={LANDING_LOGO_IMAGE}
-            alt="Snack 로고"
-            className="h-8 w-auto md:h-10"
-            loading="lazy"
-          />
-        </div>
-        <nav className="flex items-center gap-8 text-[18px] leading-[32px]">
-          <Link href="/login" className="font-bold hover:opacity-80 transition">
-            로그인
-          </Link>
-          <Link
-            href="/signup"
-            className="font-bold hover:opacity-80 transition"
-          >
-            회원가입
-          </Link>
-        </nav>
-      </header>
+      {isAuthenticated ? (
+        <Header
+          variant="app"
+          rightContent={
+            <div className="flex items-center gap-12">
+              <HeaderNavLink href="/profile">Profile</HeaderNavLink>
+              <HeaderNavLink variant="button" onClick={handleLogout}>
+                Logout
+              </HeaderNavLink>
+            </div>
+          }
+        />
+      ) : (
+        <Header variant="landing" />
+      )}
 
       {/* Main visual */}
       <main className="mx-auto flex max-w-5xl flex-col items-center px-4 pb-24 pt-16 md:pt-24">
@@ -89,29 +77,15 @@ export default function LandingPage() {
 
         {/* Sub bubbles with speech bubble arrows */}
         <div className="mt-12 grid gap-6 md:grid-cols-3 w-full max-w-5xl">
-          <SpeechBubble
-            text="쉽고 빠르게 구매를 요청해보세요"
-            arrowImage={SPEECH_BUBBLE_ARROW_1}
-          />
-          <SpeechBubble
-            text="다양한 품목도 한 눈에 파악해요"
-            arrowImage={SPEECH_BUBBLE_ARROW_2}
-          />
-          <SpeechBubble
-            text="관리자와 유저 모두 이용 가능해요"
-            arrowImage={SPEECH_BUBBLE_ARROW_3}
-          />
+          <SpeechBubble text="쉽고 빠르게 구매를 요청해보세요" />
+          <SpeechBubble text="다양한 품목도 한 눈에 파악해요" />
+          <SpeechBubble text="관리자와 유저 모두 이용 가능해요" />
         </div>
 
         {/* Hero illustration - 디자인 시스템 Img_landing 기반 */}
         <div className="mt-14 w-full max-w-5xl">
-          <div className="relative w-full overflow-hidden rounded-[32px] border-[4px] border-[#f97b22]/40 bg-[#fef3eb] aspect-[1674/564]">
-            <img
-              src={LANDING_HERO_IMAGE}
-              alt="스낵 서비스 랜딩 일러스트"
-              className="w-full h-full object-contain"
-              loading="lazy"
-            />
+          <div className="relative w-full overflow-hidden rounded-[32px] border-[4px] border-[#f97b22]/40 bg-[#fef3eb]" style={{ aspectRatio: "1674/1189" }}>
+            <LandingHeroIllustration />
           </div>
         </div>
       </main>
