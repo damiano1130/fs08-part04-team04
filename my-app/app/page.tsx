@@ -61,31 +61,132 @@ export default function LandingPage() {
         <Header variant="landing" />
       )}
 
-      {/* Main visual */}
-      <main className="mx-auto flex max-w-5xl flex-col items-center px-4 pb-24 pt-16 md:pt-24">
-        {/* Logo text */}
-        <h1 className="text-[72px] md:text-[96px] font-bold text-[#f97b22] leading-[1.1]">
-          Snack
-        </h1>
+      {/* Main visual - 반응형 레이아웃 */}
+      <main className="relative w-full min-h-screen bg-[#fdf0df] pt-16 md:pt-24 pb-24 px-4 md:px-0">
+        {/* 모바일/태블릿 레이아웃 */}
+        <div className="lg:hidden flex flex-col items-center">
+          {/* Logo and Center speech bubble */}
+          <div className="flex flex-col items-center gap-8 md:gap-12 w-full max-w-[742px] mb-12 md:mb-16">
+            {/* Logo SVG */}
+            <div className="h-[96px] sm:h-[112px] md:h-[128px] w-full max-w-[380px] sm:max-w-[450px] md:max-w-[504px] flex items-center justify-center">
+              <img
+                src="/landing-logo-main.svg"
+                alt="Snack"
+                className="w-full h-full object-contain"
+                loading="lazy"
+              />
+            </div>
 
-        {/* Center speech bubble */}
-        <div className="mt-6 rounded-[999px] border-[4px] border-[#fcc49c] bg-white px-8 py-5 text-center max-w-[720px]">
-          <p className="text-[20px] md:text-[22px] font-bold text-[#f97b22] leading-[32px]">
-            흩어진 간식 구매처를 통합하고, 기수별 지출을 똑똑하게 관리하세요
-          </p>
+            {/* Center speech bubble */}
+            <div className="w-full rounded-[100px] border-[4px] border-[#fcc49c] bg-white px-6 sm:px-8 md:px-[32px] py-4 sm:py-5 md:py-[20px] text-center overflow-hidden">
+              <p className="text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px] font-bold text-[#f97b22] leading-[28px] sm:leading-[32px] whitespace-nowrap">
+                흩어진 간식 구매처를 통합하고, 기수별 지출을 똑똑하게 관리하세요
+              </p>
+            </div>
+          </div>
+
+          {/* Hero illustration */}
+          <div className="relative w-full max-w-[95vw] md:max-w-[90vw] mb-8 md:mb-12 flex items-center justify-center">
+            <div
+              className="relative w-full overflow-hidden"
+              style={{ aspectRatio: "1674/564" }}
+            >
+              <LandingHeroIllustration />
+            </div>
+          </div>
+
+          {/* Speech bubbles - 그리드 레이아웃 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 w-full max-w-[95vw] md:max-w-[90vw]">
+            <div className="flex justify-center sm:justify-start">
+              <SpeechBubble
+                text="쉽고 빠르게 구매를 요청해보세요"
+                arrowImage="/speech-arrow-base.svg"
+              />
+            </div>
+            <div className="flex justify-center sm:justify-end">
+              <SpeechBubble
+                text="다양한 품목도 한 눈에 파악해요"
+                arrowImage="/speech-arrow-2.svg"
+              />
+            </div>
+            <div className="flex justify-center sm:justify-start">
+              <SpeechBubble
+                text="내가 원하는 간식을, 원하는 만큼!"
+                arrowImage="/speech-arrow-1.svg"
+              />
+            </div>
+            <div className="flex justify-center sm:justify-end">
+              <SpeechBubble
+                text="관리자와 유저 모두 이용 가능해요"
+                arrowImage="/speech-arrow-3.svg"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Sub bubbles with speech bubble arrows */}
-        <div className="mt-12 grid gap-6 md:grid-cols-3 w-full max-w-5xl">
-          <SpeechBubble text="쉽고 빠르게 구매를 요청해보세요" />
-          <SpeechBubble text="다양한 품목도 한 눈에 파악해요" />
-          <SpeechBubble text="관리자와 유저 모두 이용 가능해요" />
-        </div>
+        {/* 데스크톱 레이아웃 - Figma 디자인 기준 */}
+        <div className="hidden lg:block relative w-full max-w-[1920px] mx-auto min-h-screen">
+          {/* Logo and Center speech bubble - Figma: Frame 2610633 */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-[160px] flex flex-col items-center gap-[48px] w-full max-w-[742px]">
+            {/* Logo SVG */}
+            <div className="h-[128px] w-full max-w-[504px] flex items-center justify-center">
+              <img
+                src="/landing-logo-main.svg"
+                alt="Snack"
+                className="w-full h-full object-contain"
+                loading="lazy"
+              />
+            </div>
 
-        {/* Hero illustration - 디자인 시스템 Img_landing 기반 */}
-        <div className="mt-14 w-full max-w-5xl">
-          <div className="relative w-full overflow-hidden rounded-[32px] border-[4px] border-[#f97b22]/40 bg-[#fef3eb]" style={{ aspectRatio: "1674/1189" }}>
-            <LandingHeroIllustration />
+            {/* Center speech bubble */}
+            <div className="w-full max-w-[742px] rounded-[100px] border-[4px] border-[#fcc49c] bg-white px-[32px] py-[20px] text-center overflow-hidden">
+              <p className="text-[26px] font-bold text-[#f97b22] leading-[32px] whitespace-nowrap">
+                흩어진 간식 구매처를 통합하고, 기수별 지출을 똑똑하게 관리하세요
+              </p>
+            </div>
+          </div>
+
+          {/* Hero illustration - Figma: img/landing */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-[519px] w-[1674px] h-[564px] flex items-center justify-center">
+            <div
+              className="relative w-full h-full overflow-hidden"
+              style={{ aspectRatio: "1674/564" }}
+            >
+              <LandingHeroIllustration />
+            </div>
+          </div>
+
+          {/* Speech bubbles - Figma 좌표 기준 */}
+          {/* Speech bubble 1 - Figma: left-[58px] top-[639px] */}
+          <div className="absolute left-[58px] top-[639px] flex flex-col items-center w-[399px]">
+            <SpeechBubble
+              text="내가 원하는 간식을, 원하는 만큼!"
+              arrowImage="/speech-arrow-1.svg"
+            />
+          </div>
+
+          {/* Speech bubble 2 - Figma: left-[220px] top-[467px] */}
+          <div className="absolute left-[220px] top-[467px] flex flex-col items-center w-[399px]">
+            <SpeechBubble
+              text="쉽고 빠르게 구매를 요청해보세요"
+              arrowImage="/speech-arrow-base.svg"
+            />
+          </div>
+
+          {/* Speech bubble 3 - Figma: left-[1301px] top-[465px] */}
+          <div className="absolute right-[220px] top-[465px] flex flex-col items-center w-[399px]">
+            <SpeechBubble
+              text="다양한 품목도 한 눈에 파악해요"
+              arrowImage="/speech-arrow-2.svg"
+            />
+          </div>
+
+          {/* Speech bubble 4 - Figma: left-[1463px] top-[639px] */}
+          <div className="absolute right-[58px] top-[639px] flex flex-col items-center w-[399px]">
+            <SpeechBubble
+              text="관리자와 유저 모두 이용 가능해요"
+              arrowImage="/speech-arrow-3.svg"
+            />
           </div>
         </div>
       </main>

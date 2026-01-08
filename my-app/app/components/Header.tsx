@@ -10,9 +10,12 @@ type HeaderProps = {
   rightContent?: ReactNode;
 };
 
-export default function Header({ variant = "landing", rightContent }: HeaderProps) {
+export default function Header({
+  variant = "landing",
+  rightContent,
+}: HeaderProps) {
   const logoImage = "/snack-logo.png";
-  const landingLogoImage = "/landing-logo-text.svg";
+  const landingLogoImage = "/snack-logo-gnb.svg";
 
   if (variant === "landing") {
     return (
@@ -31,7 +34,10 @@ export default function Header({ variant = "landing", rightContent }: HeaderProp
           <Link href="/login" className="font-bold hover:opacity-80 transition">
             로그인
           </Link>
-          <Link href="/signup" className="font-bold hover:opacity-80 transition">
+          <Link
+            href="/signup"
+            className="font-bold hover:opacity-80 transition"
+          >
             회원가입
           </Link>
         </nav>
@@ -60,7 +66,10 @@ export default function Header({ variant = "landing", rightContent }: HeaderProp
   return (
     <header className="sticky top-0 z-50 bg-[#fbf8f4] border-b border-[#e6e6e6] h-[88px] flex items-center justify-between px-6 md:px-[120px] py-[26px]">
       <div className="flex items-center gap-16">
-        <Link href="/" className="flex items-center justify-center h-8 w-[126px]">
+        <Link
+          href="/"
+          className="flex items-center justify-center h-8 w-[126px]"
+        >
           <img
             src={logoImage}
             alt="Snack"
@@ -90,4 +99,3 @@ export default function Header({ variant = "landing", rightContent }: HeaderProp
     </header>
   );
 }
-
